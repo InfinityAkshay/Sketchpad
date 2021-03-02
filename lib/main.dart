@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import './buttons.dart';
 import './sketcher.dart';
-import '';
+import './picture.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,6 +25,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Picture> pictures = <Picture>[];
   List<Offset> points = <Offset>[];
 
   @override
@@ -38,26 +39,27 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
+    void draw(details) => setState(() {
+          RenderBox box = context.findRenderObject();
+          Offset point = box.globalToLocal(details.globalPosition);
+          point = point.translate(0.0, -(AppBar().preferredSize.height));
 
-    void draw(details) {
-      setState(() {
-        RenderBox box = context.findRenderObject();
-        Offset point = box.globalToLocal(details.globalPosition);
-        point = point.translate(0.0, -(AppBar().preferredSize.height));
+          points = List.from(points)..add(point);
+        });
 
-        points = List.from(points)..add(point);
-      });
-    }
+    void clear() => setState(() => points.clear());
 
-    void clear()=>setState(()=>points.clear());
+    void save(name, drawing) => setState(() {
+          pictures.add(Picture(name, (List.of(drawing))));
+          clear();
+        });
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Sketcher'),
       ),
-      body: Sketch(points,sketchArea,draw),
-      floatingActionButton: DrawButton(points,clear),
+      body: Sketch(points, sketchArea, draw),
+      floatingActionButton: DrawButton(points, clear, save),
     );
   }
 }
-
