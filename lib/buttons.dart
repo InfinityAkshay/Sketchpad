@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import './picture.dart';
 
 class DrawButton extends StatelessWidget {
-  final List<Offset> drawing;
   final Function clear;
   final Function save;
-  String txt = "";
-  DrawButton(this.drawing, this.clear, this.save);
+  final List drawing;
+  String txt;
+  Picture currOpen;
+  DrawButton(this.clear, this.save, this.drawing, this.currOpen);
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
