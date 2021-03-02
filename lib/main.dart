@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sketchpad/buttons.dart';
 
+import './buttons.dart';
 import './sketcher.dart';
+import '';
 
 void main() => runApp(MyApp());
 
