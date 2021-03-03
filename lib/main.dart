@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:ui';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:path_provider/path_provider.dart';
 
 import './buttons.dart';
 import './sketcher.dart';
 import './picture.dart';
 import './list.dart';
+import './saving.dart';
 
-void main() => runApp(MyApp());
+void main() async => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -33,6 +39,36 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Offset> points = <Offset>[];
   Picture currOpen;
 
+  Future<String> _read() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'my_int_key';
+    final value = prefs.getString(key) ?? "[[],[]]";
+    print(0);
+    print(value);
+    return value;
+  }
+
+  _saveAs(str) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'my_int_key';
+    prefs.setString(key, str);
+    print('saved');
+  }
+
+  void getList() async {
+    String s = await _read();
+    var lst = await jsonDecode(s);
+    names = lst[0];
+    pictures = stringToPics(lst[0], lst[1]);
+    seenPics = List.of(pictures);
+  }
+
+  @override
+  void initState() {
+    getList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     void draw(details) {
@@ -47,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     void clear() => setState(() => points.clear());
 
-    void save(name, drawing) {
+    void save(name, drawing) async {
       if (currOpen != null) {
         setState(() {
           currOpen.drawing = List.of(points);
@@ -56,13 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       } else {
         setState(() {
-          pictures.add(Picture(name, drawing));
+          var picture = Picture(name, drawing);
+          pictures.add(picture);
           names.add(name);
           points.clear();
           seenPics = List.of(pictures);
           state = "list";
         });
       }
+      _saveAs(picsToString(pictures));
     }
 
     void search(String str) {
@@ -128,10 +166,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('Sketcher', textAlign: TextAlign.center),
                     width: double.infinity),
                 backgroundColor: Colors.black),
-            body: Listing(search, open, seenPics, remove, rename),
+            body: Listing(search, open, seenPics, remove, rename, names),
             floatingActionButton: FloatingActionButton(
                 child: Icon(Icons.add),
                 onPressed: newOpen,
                 backgroundColor: Colors.black));
   }
 }
+
