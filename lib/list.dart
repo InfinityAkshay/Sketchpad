@@ -5,9 +5,11 @@ class Listing extends StatelessWidget {
   final Function open;
   final List seenPics;
   final Function remove;
+  final List names;
   String txt;
   final Function rename;
-  Listing(this.search, this.open, this.seenPics, this.remove, this.rename);
+  Listing(this.search, this.open, this.seenPics, this.remove, this.rename,
+      this.names);
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -55,13 +57,38 @@ class Listing extends StatelessWidget {
         ),
         new FlatButton(
           onPressed: () {
-            rename(picture, txt);
-            Navigator.of(context).pop();
+            if (names.contains(txt)) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialog2(context, "Filename already exists"),
+              );
+            } else if (txt == null || txt == "") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialog2(context, "Invalid name"),
+              );
+            } else {
+              rename(picture, txt);
+              Navigator.of(context).pop();
+            }
           },
           textColor: Theme.of(context).primaryColor,
           child: const Text('Rename'),
         ),
       ],
+    );
+  }
+
+  Widget _buildPopupDialog2(BuildContext context, String str) {
+    return new AlertDialog(
+      title: Text(str),
+      content: FlatButton(
+        onPressed: () => Navigator.of(context).pop(),
+        textColor: Theme.of(context).primaryColor,
+        child: const Text('Ok'),
+      ),
     );
   }
 }
