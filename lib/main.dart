@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import './buttons.dart';
 import './sketcher.dart';
 import './picture.dart';
+import './list.dart';
 
 void main() => runApp(MyApp());
 
@@ -48,11 +49,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     void save(name, drawing) {
       if (currOpen != null) {
-        currOpen.name = name;
-        currOpen.drawing = List.of(points);
-        clear();
-        state = "list";
-      } else if (!names.contains(name) && name != null && name != "") {
+        setState(() {
+          currOpen.drawing = List.of(points);
+          clear();
+          state = "list";
+        });
+      } else {
         setState(() {
           pictures.add(Picture(name, drawing));
           names.add(name);
@@ -89,6 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
           state = "draw";
         });
 
+    void remove(item) => setState(() {
+          seenPics.remove(item);
+          pictures.remove(item);
+          names.remove(item.name);
+        });
+
+    void rename(currOpen, name) => setState(() {
+          names.remove(currOpen.name);
+          names.add(name);
+          currOpen.name = name;
+        });
+
     final Container sketchArea = Container(
       margin: EdgeInsets.all(1.0),
       alignment: Alignment.topLeft,
@@ -100,21 +114,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return state == "draw"
         ? Scaffold(
-            appBar: AppBar(title: Text('Sketcpad')),
+            appBar: AppBar(
+                title: Container(
+                    child: Text('Sketchpad', textAlign: TextAlign.center),
+                    width: double.infinity),
+                backgroundColor: Colors.black),
             body: Sketch(points, sketchArea, draw),
-            floatingActionButton:
-                DrawButton(clear, save, List<Offset>.of(points), currOpen))
+            floatingActionButton: DrawButton(
+                clear, save, List<Offset>.of(points), currOpen, names))
         : Scaffold(
-            appBar: AppBar(title: Text('Sketcher')),
-            body: ListView(
-                children: <Widget>[TextField(onChanged: (str) => search(str))] +
-                    seenPics.map((picture) {
-                      return RaisedButton(
-                        onPressed: () => open(picture),
-                        child: Text(picture.name),
-                      );
-                    }).toList()),
+            appBar: AppBar(
+                title: Container(
+                    child: Text('Sketcher', textAlign: TextAlign.center),
+                    width: double.infinity),
+                backgroundColor: Colors.black),
+            body: Listing(search, open, seenPics, remove, rename),
             floatingActionButton: FloatingActionButton(
-                child: Icon(Icons.add), onPressed: newOpen));
+                child: Icon(Icons.add),
+                onPressed: newOpen,
+                backgroundColor: Colors.black));
   }
 }
