@@ -7,7 +7,8 @@ class DrawButton extends StatelessWidget {
   final List drawing;
   String txt;
   Picture currOpen;
-  DrawButton(this.clear, this.save, this.drawing, this.currOpen);
+  final List names;
+  DrawButton(this.clear, this.save, this.drawing, this.currOpen, this.names);
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -25,10 +26,15 @@ class DrawButton extends StatelessWidget {
               backgroundColor: Colors.black,
               child: Icon(Icons.save),
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) => _buildPopupDialog(context),
-                );
+                if (currOpen != null) {
+                  save(currOpen.name, drawing);
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupDialog(context),
+                  );
+                }
               }))
     ]);
   }
@@ -51,13 +57,38 @@ class DrawButton extends StatelessWidget {
         ),
         new FlatButton(
           onPressed: () {
-            save(txt, drawing);
-            Navigator.of(context).pop();
+            if (names.contains(txt)) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialog2(context, "Filename already exists"),
+              );
+            } else if (txt == null || txt == "") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialog2(context, "Invalid name"),
+              );
+            } else {
+              save(txt, drawing);
+              Navigator.of(context).pop();
+            }
           },
           textColor: Theme.of(context).primaryColor,
           child: const Text('Save'),
         ),
       ],
+    );
+  }
+
+  Widget _buildPopupDialog2(BuildContext context, String str) {
+    return new AlertDialog(
+      title: Text(str),
+      content: FlatButton(
+        onPressed: () => Navigator.of(context).pop(),
+        textColor: Theme.of(context).primaryColor,
+        child: const Text('Ok'),
+      ),
     );
   }
 }
