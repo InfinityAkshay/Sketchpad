@@ -7,7 +7,7 @@ This app allows users to make and save doodles. The paragraphs below explain how
  - [Add Sketch](#add-sketch)  
  - [Save Sketch](#save-sketch)
  - [Edit Sketch](#edit-sketch)  
- - [Searching and Renaming](#searching-and-renaming)
+ - [Renaming and Searching](#searching-and-renaming)
  - [Delete a Sketch](#delete-a-sketch)
 
 <br/>
@@ -38,7 +38,7 @@ On clicking on a saved sketch in *Sketcher* , you can open it and edit it. If yo
 <a name="searching-and-renaming"/>
 
 
-## Searching and Renaming
+## Renameing and Searching
 
 To rename a sketch, press on it and a dialog box appears to rename the sketch.
 <br/>To search for a given sketch, type the name in the *Searchbar*  and the list will only show the relevant Sketches.
